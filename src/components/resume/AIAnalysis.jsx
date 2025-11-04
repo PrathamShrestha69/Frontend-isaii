@@ -25,7 +25,7 @@ const AIAnalysis = ({ uploaded }) => {
   ];
 
   return (
-    <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+    <div className="bg-[#1A1A1A] rounded-xl p-6 border border-gray-700">
       <h3 className="text-white font-bold mb-4 flex items-center gap-2">
         <TrendingUp size={20} className="text-blue-400" />
         AI Suggestions

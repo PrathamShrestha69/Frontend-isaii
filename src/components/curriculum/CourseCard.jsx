@@ -3,7 +3,7 @@ import { ChevronRight, CheckCircle } from 'lucide-react';
 
 const CourseCard = ({ course }) => {
   return (
-    <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-all card-hover">
+    <div className="bg-[#1A1A1A] rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-all card-hover">
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <h3 className="text-xl font-bold text-white mb-2">{course.title}</h3>

@@ -34,16 +34,7 @@ const ChallengeCard = ({ challenge }) => {
             <h3 className="text-xl md:text-2xl font-bold text-white">
               {challenge.title}
             </h3>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                difficultyColors[challenge.difficulty]
-              }`}
-            >
-              {challenge.difficulty}
-            </span>
           </div>
-
-          <p className="text-gray-400 text-sm mt-2">{challenge.description}</p>
         </div>
       </div>
       <div className="mb-4">

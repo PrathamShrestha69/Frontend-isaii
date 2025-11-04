@@ -21,8 +21,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/notifications" element={<Notifications />} />
-
-          {/* Layout + Dashboard are public; other routes inside Layout are protected individually */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />

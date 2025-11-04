@@ -3,7 +3,7 @@ import { Calendar, Clock } from 'lucide-react';
 
 const InterviewCard = ({ interview }) => {
   return (
-    <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all card-hover">
+    <div className="bg-[#1A1A1A] rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all card-hover">
       <div
         className="h-32"
         style={{ background: interview.gradient }}

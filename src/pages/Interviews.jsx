@@ -27,11 +27,11 @@ const Interviews = () => {
         </nav>
 
         {/* Header card */}
-        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div className="bg-[#1A1A1A] rounded-xl p-6 border border-gray-700">
           <div className="flex items-start gap-6">
             <div className="w-28 h-28 bg-gray-900 rounded-md flex items-center justify-center text-gray-400">
               {/* placeholder image */}
-              <span className="text-xs">Logo</span>
+              <span className="text-5xl">G</span>
             </div>
 
             <div className="flex-1">
@@ -41,7 +41,7 @@ const Interviews = () => {
               <p className="text-gray-400 mt-1">Package: $150,000 / year</p>
 
               <div className="mt-4">
-                <div className="bg-blue-900/50 text-blue-100 px-4 py-3 rounded-md border border-blue-800 w-full max-w-2xl">
+                <div className="bg-gray-800 text-blue-100 px-4 py-3 rounded-md border border-gray-800 w-full max-w-2xl">
                   Complete your Placement Assessment Questionnaire (PAQ) for
                   tailored tips.
                 </div>
@@ -105,7 +105,7 @@ const Interviews = () => {
                 {topics.map((t) => (
                   <label
                     key={t.id}
-                    className="flex items-center justify-between bg-gray-900 border border-gray-700 rounded-md p-4"
+                    className="flex items-center justify-between bg-[#1A1A1A] border border-gray-700 rounded-md p-4"
                   >
                     <div className="flex items-center gap-4">
                       <input
@@ -132,18 +132,6 @@ const Interviews = () => {
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* Upcoming Interviews Grid */}
-      <div>
-        <h2 className="text-xl font-bold text-white mb-4">
-          Upcoming Interviews
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {interviewsList.map((interview) => (
-            <InterviewCard key={interview.id} interview={interview} />
-          ))}
         </div>
       </div>
     </div>

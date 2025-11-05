@@ -5,7 +5,6 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  // ensure cookies (session) are sent for protected endpoints like GET /me
   withCredentials: true,
 });
 

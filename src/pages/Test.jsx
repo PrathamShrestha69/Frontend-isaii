@@ -62,7 +62,16 @@ const Test = () => {
   }
 
   if (showResults) {
-    return <TestResults selectedTest={selectedTest} onRetake={handleRetake} />;
+    return (
+      <TestResults
+        selectedTest={selectedTest}
+        onRetake={handleRetake}
+        answers={answers}
+        questions={questions}
+        totalTime={2700}
+        timeLeft={timeLeft}
+      />
+    );
   }
 
   const totalQuestions = selectedTest.questions;
@@ -74,8 +83,10 @@ const Test = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">{selectedTest.title}</h1>
         <div className="flex items-center gap-4">
-          
-          <button onClick={handleSubmit} className="btn-pink-red px-4 py-2 rounded-md font-semibold">
+          <button
+            onClick={handleSubmit}
+            className="btn-pink-red px-4 py-2 rounded-md font-semibold"
+          >
             End Test
           </button>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import api from "../lib/api";
 
 const Signup = () => {
   const { login } = useApp();
@@ -19,14 +20,58 @@ const Signup = () => {
       setError("Please provide email and password");
       return;
     }
-    // create and persist user
-    const avatar = (name || email).slice(0, 2).toUpperCase();
-    const user = { name: name || "User", email, avatar, password };
-    try {
-      localStorage.setItem("pp_user", JSON.stringify(user));
-    } catch (e) {}
-    login(user);
-    navigate(from, { replace: true });
+    (async () => {
+      try {
+        const res = await api.post("/auth/register", { name, email, password });
+
+        // server may or may not return token/user on register. If token missing,
+        // try to log in immediately (common pattern when backend doesn't auto-login)
+        let token = res.data?.token ?? res.data?.accessToken;
+        let userFromServer = res.data?.user ?? res.data;
+
+        if (!token) {
+          try {
+            const loginRes = await api.post("/auth/login", { email, password });
+            token = loginRes.data?.token ?? loginRes.data?.accessToken;
+            userFromServer = loginRes.data?.user ?? loginRes.data;
+          } catch (loginErr) {
+            // login attempt failed; we'll handle below
+            console.warn("Automatic login after register failed:", loginErr);
+          }
+        }
+
+        if (token && userFromServer) {
+          login(userFromServer, token);
+          navigate(from, { replace: true });
+          return;
+        }
+
+        // If we get here, registration likely succeeded but automatic login didn't work.
+        // Inform the user and redirect them to login page so they can sign in manually.
+        console.info(
+          "Registration created the user but login was not completed."
+        );
+        setError("Registration succeeded — please log in.");
+        navigate("/login", { replace: true, state: { from } });
+      } catch (err) {
+        // show detailed error in console and display a friendly message to the user
+        console.error("Signup error:", err);
+        const resp = err?.response;
+        if (resp) {
+          const data = resp.data;
+          if (data) {
+            if (typeof data === "string") setError(data);
+            else if (data.message) setError(data.message);
+            else if (data.errors) setError(JSON.stringify(data.errors));
+            else setError(JSON.stringify(data));
+          } else {
+            setError(`Request failed: ${resp.status} ${resp.statusText}`);
+          }
+        } else {
+          setError(err.message || "Registration failed");
+        }
+      }
+    })();
   };
 
   return (

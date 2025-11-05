@@ -1,11 +1,23 @@
-import React from "react";
-import { Menu, Bell, Search } from "lucide-react";
+import React, { useMemo } from "react";
+import { Menu, Search } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = ({ toggleSidebar }) => {
-  const { user, isAuthenticated, logout } = useApp();
+  const { isAuthenticated, logout, user } = useApp();
   const navigate = useNavigate();
+  const me = user;
+
+  const avatarInitials = useMemo(() => {
+    if (!me) return "";
+    if (me.avatar) return me.avatar;
+    // Prefer username for initials, then name/fullName, then email
+    const source =
+      me.username || me.name || me.fullName || me.email || me.emailId || "";
+    const parts = source.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + (parts[1][0] || parts[0][1] || "")).toUpperCase();
+  }, [me]);
 
   const handleLogout = () => {
     logout();
@@ -33,23 +45,20 @@ const Header = ({ toggleSidebar }) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link
-            to="/notifications"
-            aria-label="Notifications"
-            className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all"
-          >
-            <Bell size={20} />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
-          </Link>
-
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              <div className="hidden md:block text-right">
-                <p className="text-white font-semibold text-sm">{user?.name}</p>
-                <p className="text-gray-400 text-xs">{user?.email}</p>
+              
+              <div className="text-right">
+                {/* Prefer username first as requested */}
+                <p className="text-white font-semibold text-sm">
+                  {me?.username || me?.name || me?.fullName}
+                </p>
+                <p className="text-gray-400 text-xs">
+                  {me?.email || me?.emailId}
+                </p>
               </div>
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center font-bold text-white">
-                {user?.avatar}
+                {avatarInitials}
               </div>
               <button
                 onClick={handleLogout}

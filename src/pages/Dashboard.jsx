@@ -1,8 +1,8 @@
-import React from 'react';
-import { useApp } from '../context/AppContext';
-import StatsCard from '../components/dashboard/StatsCard';
-import InterviewCard from '../components/dashboard/InterviewCard';
-import { Plus } from 'lucide-react';
+import React from "react";
+import { useApp } from "../context/AppContext";
+import StatsCard from "../components/dashboard/StatsCard";
+import InterviewCard from "../components/dashboard/InterviewCard";
+import { Plus } from "lucide-react";
 
 const Dashboard = () => {
   const { user, interviewsList } = useApp();
@@ -13,19 +13,19 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatsCard
           title="Scheduled Interviews"
-          value={user.streak}
+          value={user?.streak ?? 0}
           subtitle="Upcoming this month"
           color="blue"
         />
         <StatsCard
           title="Upcoming Tests"
-          value={user.upcomingTests}
+          value={user?.upcomingTests ?? 0}
           subtitle="Next assessment"
           color="purple"
         />
         <StatsCard
           title="Learning Streak"
-          value={user.learningStreak}
+          value={user?.learningStreak ?? 0}
           subtitle="Course completion"
           color="green"
         />

@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import {
-  mockUser,
   interviews,
   challenges,
   curriculum,
   mockQuestions,
 } from "../data/mockData";
+import api, { setAuthToken } from "../lib/api";
 
 const AppContext = createContext();
 
@@ -18,15 +18,8 @@ export const useApp = () => {
 };
 
 export const AppProvider = ({ children }) => {
-  // user is null when not authenticated; try to restore from localStorage for a simple persistence
-  const [user, setUser] = useState(() => {
-    try {
-      const raw = localStorage.getItem("pp_user");
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
-  });
+  // user is fetched from server; nothing is stored in localStorage
+  const [user, setUser] = useState(null);
   const [interviewsList] = useState(interviews);
   const [challengesList] = useState(challenges);
   const [curriculumList] = useState(curriculum);
@@ -34,20 +27,79 @@ export const AppProvider = ({ children }) => {
   const [selectedTest, setSelectedTest] = useState(null);
   const [testAnswers, setTestAnswers] = useState({});
 
+  // normalize user shape from backend to consistent fields
+  const normalizeUser = (u) => {
+    if (!u || typeof u !== "object") return null;
+    const name = u.name || u.username || u.fullName || null;
+    const email = u.email || u.emailId || null;
+    return { ...u, name, email };
+  };
+
+  // robustly extract user object from various API response shapes
+  const extractUser = (respData) => {
+    if (!respData) return null;
+    // common shapes: {user}, {data: user}, {data: {user}}, or the user itself
+    if (respData.user) return respData.user;
+    if (respData.data) {
+      if (respData.data.user) return respData.data.user;
+      return respData.data;
+    }
+    return respData;
+  };
+
+  // Do not call /auth/me on load; only do it right after a successful login
+  useEffect(() => {
+    // no-op: auth is established via login() only
+  }, []);
+
   const value = {
     user,
     isAuthenticated: !!user,
-    login: (userData) => {
-      setUser(userData);
+    // login may be called with (userData, token). If userData is missing but token is present
+    // try to fetch current user from the server (useful when backend returns token only or uses cookies).
+    login: async (userData, token) => {
+      // set in-memory bearer if provided
+      if (token) setAuthToken(token);
+
+      // Always verify session by calling /auth/me right after login
       try {
-        localStorage.setItem("pp_user", JSON.stringify(userData));
-      } catch (e) {}
+        const res = await api.get("/auth/me");
+        const serverUser = extractUser(res?.data);
+        const normalized = normalizeUser(serverUser);
+        if (normalized) {
+          setUser(normalized);
+          return;
+        }
+      } catch (err) {
+        // If /auth/me fails (e.g., backend returns token but cookie not set), fall back to provided userData
+        console.warn("login: /auth/me failed after login", err);
+      }
+
+      if (userData) {
+        const normalized = normalizeUser(userData);
+        setUser(normalized);
+      } else {
+        setUser(null);
+      }
+    },
+    // update user profile on server and refresh local user state
+    updateUser: async (updates) => {
+      try {
+        // if your backend supports updating current user at /auth/me
+        const res = await api.put("/auth/me", updates);
+        const updated = res?.data?.user ?? res?.data ?? null;
+        const normalized = normalizeUser(updated);
+        if (normalized) {
+          setUser(normalized);
+        }
+        return { success: true, user: normalized };
+      } catch (err) {
+        return { success: false, error: err };
+      }
     },
     logout: () => {
       setUser(null);
-      try {
-        localStorage.removeItem("pp_user");
-      } catch (e) {}
+      setAuthToken(null);
     },
     interviewsList,
     challengesList,
